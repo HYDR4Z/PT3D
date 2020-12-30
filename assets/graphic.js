@@ -2,7 +2,7 @@
 const cv = document.getElementById('cv');
 
 // Global vars
-let camera, controls, scene, renderer;
+let camera, controls, scene, renderer, composer;
 let canvasSize = {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -13,7 +13,6 @@ let gridRadius = 20;
 let mouse = {};
 let rayCaster = new THREE.Raycaster();
 let cameraFixed = false;
-let cameraFixedPosition;
 
 // Create a sphere with square faces, Thanks to https://stackoverflow.com/a/44289391
 function createSphereOfQuadsWireframe(radius, widthSegments, heightSegments, color, showWidthSegments, showHeightSegments) {
@@ -43,7 +42,7 @@ function createSphereOfQuadsWireframe(radius, widthSegments, heightSegments, col
             arcHeightGeom.rotateX(Math.PI / 2);
             arcHeightGeom.translate(0, height, 0);
             var arcHeightLine = new THREE.Line(arcHeightGeom, new THREE.LineBasicMaterial({
-                color: (heightSegments / 2 == hs) ? '#fff' : color
+                color: (heightSegments / 2 == hs) ? '#b5b5b5' : color
             }));
             sphereObj.add(arcHeightLine);
         }
@@ -131,7 +130,7 @@ function create3DTarget(target) {
     let planetSize = .5;
     loader.load(`./assets/img/targets/${target.name}.jpg`, (texture) => {
         let geom = new THREE.SphereGeometry(planetSize, 30, 30);
-        let mat = new THREE.MeshLambertMaterial({map: texture});
+        let mat = (target.name == 'Sun') ? new THREE.MeshBasicMaterial({map: texture}) : new THREE.MeshLambertMaterial({map: texture});
         let planet = new THREE.Mesh(geom, mat);
         planet.position.x = gridRadius * Math.cos(target.el) * Math.cos(target.az);
         planet.position.y = gridRadius * Math.cos(target.el) * Math.sin(target.az);
@@ -254,12 +253,7 @@ function animate() {
     } else { controls.enabled = true }
     camera.updateProjectionMatrix();
     controls.update();
-    render();
-}
-
-// Render scene
-function render() {
-    renderer.render( scene, camera );
+    composer.render();
 }
 
 // Setup
@@ -273,12 +267,18 @@ function init() {
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize(canvasSize.width, canvasSize.height);
     cv.appendChild(renderer.domElement);
+    // Post processing setup
+    composer = new POSTPROCESSING.EffectComposer(renderer);
+    composer.addPass(new POSTPROCESSING.RenderPass(scene, camera));
+    const effectPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.BloomEffect());
+    effectPass.renderToScreen = true;
+    composer.addPass(effectPass)
     // Visible grid sphere
-    let gridSphere = createSphereOfQuadsWireframe(gridRadius, 36, 18, "#2e2e2e", true, true);
+    const gridSphere = createSphereOfQuadsWireframe(gridRadius, 36, 18, "#2e2e2e", true, true);
     gridSphere.name = 'gridSphere';
     scene.add(gridSphere);
     // Clickable inverted sphere (transparent hollow cube)
-    let invertedSphere = createInvertedSphere(gridRadius, 36, 18)
+    const invertedSphere = createInvertedSphere(gridRadius, 36, 18)
     invertedSphere.name = 'clickSphere';
     scene.add(invertedSphere);
     // Create orientation text
@@ -290,8 +290,8 @@ function init() {
         create3DTarget(target);
     });
     // Skybox
-    var urls = ['./assets/img/skybox/px.png', './assets/img/skybox/nx.png', './assets/img/skybox/py.png', './assets/img/skybox/ny.png', './assets/img/skybox/pz.png', './assets/img/skybox/nz.png'];
-    var skybox = new THREE.CubeTextureLoader().load(urls);
+    const urls = ['./assets/img/skybox/px.png', './assets/img/skybox/nx.png', './assets/img/skybox/py.png', './assets/img/skybox/ny.png', './assets/img/skybox/pz.png', './assets/img/skybox/nz.png'];
+    const skybox = new THREE.CubeTextureLoader().load(urls);
     scene.background = skybox;
     // Global / AmbientLight
     const light = new THREE.AmbientLight('#d4caba');

@@ -135,7 +135,7 @@ window.ThreeBSP = (function() {
 	};
 	ThreeBSP.prototype.toGeometry = function() {
 		var i, j,
-            matrix = new THREE.Matrix4().getInverse( this.matrix ),
+            matrix = new THREE.Matrix4().copy(this.matrix).invert(),
             // matrixInv.copy( matrix ).invert()
 			geometry = new THREE.Geometry(),
 			polygons = this.tree.allPolygons(),
