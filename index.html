@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/main.css">
+    <title>PlanetTracker GUI</title>
+</head>
+<body>
+    <noscript>Your browser doesn't seem to support JavaScript, this app needs JavaScript to run</noscript>
+    <table id="targetInfoTable">
+        <tr>
+            <td>Name: <span id="targetNAME">N/A</span></td>
+            <td>Constellation: <span id="targetCONST">N/A</span></td>
+        </tr>
+        <tr>
+            <td>Azimuth: <span id="targetAZ">N/A</span></td>
+            <td>Elevation: <span id="targetEL">N/A</span></td>
+        </tr>
+        <tr>
+            <td>Distance: <span id="targetDIST">N/A</span></td>
+            <td>Diameter: <span id="targetDIAM">N/A</span></td>
+        </tr>
+        <tr>
+            <td>Rise: <span id="targetABOVE">N/A</span></td>
+            <td>Dawn: <span id="targetBELOW">N/A</span></td>
+        </tr>
+    </table>
+    <main>
+        <ul id="targetList">
+                
+        </ul>
+        <ul id="menuList">
+            <li onclick="selectMenu(0)">
+                <img src="./assets/icons/Eye.png" />
+            </li>
+            <li onclick="selectMenu(1)">
+                <img src="./assets/icons/Map.png" />
+            </li>
+            <li onclick="selectMenu(2)">
+                <img src="./assets/icons/Hardware.png" />
+            </li>
+        </ul>
+        <section id="menuSection">
+            <div>
+                <button id="setTargetButton" disabled>Set target</button>
+            </div>
+            <div>
+                <p>Latitude:</p>
+                <input id="latInput" type="number" min="-90" max="90" oninput="checkNumericInput(this)" placeholder="Latitude"/>
+                <p>Longitude:</p>
+                <input id="lonInput" type="number" min="-180" max="180" oninput="checkNumericInput(this)" placeholder="Longitude"/>
+                <button id="updateLocationButton" onclick="if (!this.disabled) updateLocation()" disabled>Update location</button>
+            </div>
+            <div>
+                <p>Status: <span id="statusSpan" class="success">Ready</span></p>
+                <button id="sendTargetButton" onclick="if (!this.disabled) sendTarget()" disabled>Send Target</button>
+            </div>
+        </section>
+    </main>
+    <section id="cv"></section>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="./assets/three.js"></script>
+<script type="text/javascript" src="./assets/ThreeCSG.js"></script>
+<script type="text/javascript" src="./assets/three.text-texture.js"></script>
+<script type="text/javascript" src="./assets/three.text-sprite.js"></script>
+<script type="text/javascript" src="./assets/OrbitControls.js"></script>
+<script type="text/javascript" src="./assets/graphic.js"></script>
+<script type="text/javascript" src="./assets/main.js"></script>
+</html>

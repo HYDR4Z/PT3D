@@ -1,0 +1,234 @@
+@import url('https://fonts.googleapis.com/css2?family=Nova+Flat&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300&display=swap');
+
+::-webkit-scrollbar {
+    width: 6px;
+}  
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(87, 87, 87);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(58, 58, 58);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+::-moz-selection {
+    color: black;
+    background: white;
+}
+
+::selection {
+    color: black;
+    background: white;
+}
+
+* {
+    text-decoration: none;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    font-family: 'Hind';
+    list-style-type: none;
+}
+
+main {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    bottom: 0;
+    background: rgba(0, 0, 0, .5);
+    user-select: none;
+    pointer-events: none;
+}
+
+main ul {
+    position: relative;
+    display: flex;
+}
+
+main ul:nth-child(2) {
+    margin-left: auto;
+}
+
+ul li {
+    pointer-events: all;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.5vw;
+    height: 2.5vw;
+    min-width: 40px;
+    min-height: 40px;
+    transition: .15s ease;
+}
+
+ul li img {
+    display: block;
+    height: 85%;
+    width: 85%;
+}
+
+ul li:hover {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+ul li.active {
+    background: rgba(118, 72, 254, 0.5);
+}
+
+ul li .tooltiptext {
+    pointer-events: none;
+    opacity: 0;
+    width: 120px;
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+    transition: .15s ease;
+}
+
+ul li:hover .tooltiptext {
+    opacity: 1;
+}
+
+table {
+    pointer-events: none;
+    position: absolute;
+    top: 1vw;
+    left: 1vw;
+    transform: rotate3d(-.25, 1, 0, 20deg);
+    opacity: 0;
+    transition: .3s ease;
+}
+
+table.active {
+    opacity: 1;
+}
+
+td {
+    width: 10vw;
+    min-width: 185px;
+    color: #e9e9e9;
+    font-size: 20px;
+}
+
+td:last-child {
+    width: 12.5vw;
+    min-width: 225px;
+}
+
+td span {
+    color: #7649fe;
+    font-weight: bold;
+}
+
+#menuSection {
+    position: absolute;
+    height: 2.5vw;
+    top: -2.5vw;
+    width: 100vw;
+    right: 0;
+    color: #e9e9e9;
+    font-weight: bold;
+}
+
+#menuSection div {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(0, 0, 0, .5);
+    pointer-events: all;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    opacity: 0;
+    display: none;
+    transition: .15s ease;
+}
+
+#menuSection div.active {
+    display: flex;
+}
+
+#menuSection div.visible {
+    opacity: 1;
+}
+
+#menuSection div * {
+    margin-right: 8px;
+}
+
+#menuSection div *:first-child {
+    margin-left: 8px;
+}
+
+button {
+    background: #7649fe;
+    color: #e9e9e9;
+    font-weight: bold;
+    border-radius: 3px;
+    border: none;
+    padding: 5px;
+    transition: .15s ease;
+}
+
+button:enabled:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    background: #632fff;
+}
+
+button:disabled {
+    background: #747474;
+    cursor: no-drop;
+}
+
+button:active {
+    transition: 0s ease;
+    transform: scale(1) !important;
+}
+
+button:focus {
+    outline: none;
+}
+
+input {
+    background: black;
+    border: none;
+    color: #e9e9e9;
+    font-size: 18px;
+    width: 70px;
+    outline: none;
+}
+
+.success {
+    color: #4eb94e;
+}
+
+.warning {
+    color: #d8cb56;
+}
+
+.error {
+    color: #d86556;
+}
