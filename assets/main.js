@@ -34,6 +34,21 @@ navigator.geolocation.getCurrentPosition((position) => {
     updateLocationUpdateButton();
 });
 
+// Linear interpolation function to smoothen actions
+function lerp (start, end, amt){
+    return (1-amt)*start+amt*end
+}
+
+// Convert degrees to radians
+Math.radians = function(degrees) {
+	return degrees * Math.PI / 180;
+}
+
+// Convert radians to degrees
+Math.degrees = function(radians) {
+	return radians * 180 / Math.PI;
+}
+
 // Fetch data from api
 const fetchData = () => {
     // http://api.hydr4z.nl/?key=BhEx0WJP5Y75qwK%5EE1i8

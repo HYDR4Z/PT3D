@@ -1,6 +1,5 @@
 // Dom elements
 const cv = document.getElementById('cv');
-
 // Global vars
 let camera, controls, scene, renderer, composer;
 let canvasSize = {
@@ -132,11 +131,13 @@ function create3DTarget(target) {
         let geom = new THREE.SphereGeometry(planetSize, 30, 30);
         let mat = (target.name == 'Sun') ? new THREE.MeshBasicMaterial({map: texture}) : new THREE.MeshLambertMaterial({map: texture});
         let planet = new THREE.Mesh(geom, mat);
+        // Positioning
+        planet.name = target.name; planet.targetIndex = targets.indexOf(target);
         planet.position.x = gridRadius * Math.cos(target.el) * Math.cos(target.az);
         planet.position.y = gridRadius * Math.cos(target.el) * Math.sin(target.az);
         planet.position.z = gridRadius * Math.sin(target.el);
-        planet.name = target.name;
-        planet.targetIndex = targets.indexOf(target);
+        planet.lookAt(0, 0, 0); planet.rotateY(Math.radians(target.az));
+        // Target specific features
         if (planet.name == 'Saturn') {
             loader.load(`./assets/img/targets/SaturnRing.png`, (texture) => {
                 geom = new THREE.RingGeometry(planetSize * 1.116086235489221, planetSize * 2.326699834162521, 84, 1);
@@ -168,15 +169,9 @@ function create3DTarget(target) {
             light.position.z = (gridRadius - 1) * Math.sin(target.el);
             scene.add(light);
         }
-        planet.lookAt(0, 0, 0);
-        planet.rotateY(target.az);
+        // planet.add(new THREE.AxesHelper(5));
         scene.add(planet);
     });
-}
-
-// Linear interpolation function to smoothen actions
-function lerp (start, end, amt){
-    return (1-amt)*start+amt*end
 }
 
 // Initialise the orbitcontrols
@@ -193,6 +188,8 @@ function initializeControls() {
         MIDDLE: THREE.MOUSE.ROTATE,
         RIGHT: THREE.MOUSE.ROTATE
     }
+    // Add event listeners for click, resize scroll etc.
+    addEventListeners();
 }
 
 // Update sizes on window resize
@@ -241,10 +238,64 @@ function pointerUp(e) {
     if (mouse.x == newMouse.x && mouse.y == newMouse.y) { onClick(e) }
 }
 
+// Setup the scene, camera, renderer and postprocessing
+function generalSetup() {
+    // Scene
+    scene = new THREE.Scene();
+    // Camera setup
+    camera = new THREE.PerspectiveCamera(75, canvasSize.width / canvasSize.height, 0.1, 1000);
+    camera.position.set(1, 0, 0);
+    // Renderer setup
+    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(canvasSize.width, canvasSize.height);
+    cv.appendChild(renderer.domElement);
+    // Post processing setup
+    composer = new POSTPROCESSING.EffectComposer(renderer);
+    composer.addPass(new POSTPROCESSING.RenderPass(scene, camera));
+    const effectPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.BloomEffect());
+    effectPass.renderToScreen = true;
+    composer.addPass(effectPass);
+}
+
+// Add the gridsphere and clicksphere
+function addSpheres() {
+    // Visible grid sphere
+    const gridSphere = createSphereOfQuadsWireframe(gridRadius, 36, 18, "#2e2e2e", true, true);
+    gridSphere.name = 'gridSphere';
+    scene.add(gridSphere);
+    // Clickable inverted sphere (transparent hollow cube)
+    const invertedSphere = createInvertedSphere(gridRadius, 36, 18)
+    invertedSphere.name = 'clickSphere';
+    scene.add(invertedSphere);
+}
+
+// Setup the skybox and lighting
+function setupEnviroment() {
+    // Skybox
+    const urls = ['./assets/img/skybox/px.png', './assets/img/skybox/nx.png', './assets/img/skybox/py.png', './assets/img/skybox/ny.png', './assets/img/skybox/pz.png', './assets/img/skybox/nz.png'];
+    const skybox = new THREE.CubeTextureLoader().load(urls);
+    scene.background = skybox;
+    // Global / AmbientLight
+    const light = new THREE.AmbientLight('#d4caba');
+    light.intensity = 0.2;
+    scene.add(light);
+}
+
+// Add event listeners for click, move, scroll etc.
+function addEventListeners() {
+    // Event listeners and handlers
+    window.addEventListener('resize', onWindowResize, false);
+    cv.addEventListener('wheel', onScroll, false);
+    cv.addEventListener( 'pointerdown', pointerDown, false);
+    cv.addEventListener( 'pointerup', pointerUp, false);
+}
+
 // Loop
 function animate() {
-    requestAnimationFrame( animate );
-    camera.zoom = lerp(camera.zoom, cameraZoom, (selectedTargetObject != null) ? 0.02 : 0.1);
+    requestAnimationFrame(animate);
+    // Update the camera's zoom level if the zoom target value is not the current zoom
+    if (camera.zoom != cameraZoom) { camera.zoom = lerp(camera.zoom, cameraZoom, (selectedTargetObject != null) ? 0.02 : 0.1) }
+    // If a target is selected, point the camera at the target and disable controls
     if (selectedTargetObject != null) {
         controls.enabled = false;
         camera.position.x = lerp(camera.position.x, selectedTargetObject.position.x / gridRadius * -1, 0.08);
@@ -258,29 +309,10 @@ function animate() {
 
 // Setup
 function init() {
-    // Scene
-    scene = new THREE.Scene();
-    // Camera setup
-    camera = new THREE.PerspectiveCamera(75, canvasSize.width / canvasSize.height, 0.1, 1000);
-    camera.position.set(1, 0, 0);
-    // Renderer setup
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setSize(canvasSize.width, canvasSize.height);
-    cv.appendChild(renderer.domElement);
-    // Post processing setup
-    composer = new POSTPROCESSING.EffectComposer(renderer);
-    composer.addPass(new POSTPROCESSING.RenderPass(scene, camera));
-    const effectPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.BloomEffect());
-    effectPass.renderToScreen = true;
-    composer.addPass(effectPass)
-    // Visible grid sphere
-    const gridSphere = createSphereOfQuadsWireframe(gridRadius, 36, 18, "#2e2e2e", true, true);
-    gridSphere.name = 'gridSphere';
-    scene.add(gridSphere);
-    // Clickable inverted sphere (transparent hollow cube)
-    const invertedSphere = createInvertedSphere(gridRadius, 36, 18)
-    invertedSphere.name = 'clickSphere';
-    scene.add(invertedSphere);
+    // Setup the scene, camera, renderer and postprocessing
+    generalSetup();
+    // Add the grid sphere and clicksphere
+    addSpheres();
     // Create orientation text
     createOrientationText().forEach(el => {
         scene.add(el);
@@ -289,26 +321,13 @@ function init() {
     targets.forEach(target => {
         create3DTarget(target);
     });
-    // Skybox
-    const urls = ['./assets/img/skybox/px.png', './assets/img/skybox/nx.png', './assets/img/skybox/py.png', './assets/img/skybox/ny.png', './assets/img/skybox/pz.png', './assets/img/skybox/nz.png'];
-    const skybox = new THREE.CubeTextureLoader().load(urls);
-    scene.background = skybox;
-    // Global / AmbientLight
-    const light = new THREE.AmbientLight('#d4caba');
-    light.intensity = 0.2;
-    scene.add(light);
-    // Controls
+    // Add skybox and lighting
+    setupEnviroment();
+    // Setup the controls
     initializeControls();
-    // Event listeners and handlers
-    window.addEventListener('resize', onWindowResize, false);
-    cv.addEventListener('wheel', onScroll, false);
-    cv.addEventListener( 'pointerdown', pointerDown, false);
-    cv.addEventListener( 'pointerup', pointerUp, false);
+    
     //TODO Croshair
     // // cv.addEventListener('mousemove', function(e){updateCroshair(e)}, false);
-
-    // scene.add(new THREE.AxesHelper( 5 ))
-
     //TODO Croshair
     // // var hRadius = Math.sin(100 * (Math.PI / 40)) * gridRadius;
     // // var height = Math.cos(100 * (Math.PI / 40)) * gridRadius;
