@@ -131,11 +131,12 @@ function create3DTarget(target) {
         let geom = new THREE.SphereGeometry(planetSize, 30, 30);
         let mat = (target.name == 'Sun') ? new THREE.MeshBasicMaterial({map: texture}) : new THREE.MeshLambertMaterial({map: texture});
         let planet = new THREE.Mesh(geom, mat);
-        // Positioning
         planet.name = target.name; planet.targetIndex = targets.indexOf(target);
-        planet.position.x = gridRadius * Math.cos(target.el) * Math.cos(target.az);
-        planet.position.y = gridRadius * Math.cos(target.el) * Math.sin(target.az);
-        planet.position.z = gridRadius * Math.sin(target.el);
+        // Positioning
+        let targetCartesian = Math.cartesian(target.az, target.el, gridRadius);
+        planet.position.x = -targetCartesian.x;
+        planet.position.z = -targetCartesian.z;
+        planet.position.y = targetCartesian.y;
         planet.lookAt(0, 0, 0); planet.rotateY(Math.radians(target.az));
         // Target specific features
         if (planet.name == 'Saturn') {
@@ -157,16 +158,17 @@ function create3DTarget(target) {
                         geom.faceVertexUvs[0][fi][2].x = u0; geom.faceVertexUvs[0][fi][2].y = v1;
                     }
                 }
-                mat = new THREE.MeshStandardMaterial( { map: texture, side: THREE.DoubleSide, transparent: true } );
+                mat = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide, transparent: true } );
                 let ring = new THREE.Mesh(geom, mat);
                 ring.rotateX(27);
                 planet.add(ring);
             });
         } else if (target.name == 'Sun') {
             const light = new THREE.PointLight('#d4caba', 1, 500, 0 );
-            light.position.x = (gridRadius - 1) * Math.cos(target.el) * Math.cos(target.az);
-            light.position.y = (gridRadius - 1) * Math.cos(target.el) * Math.sin(target.az);
-            light.position.z = (gridRadius - 1) * Math.sin(target.el);
+            let lightCartesian = Math.cartesian(target.az, target.el, gridRadius - .5);
+            light.position.x = -lightCartesian.x;
+            light.position.y = lightCartesian.y;
+            light.position.z = -lightCartesian.z;
             scene.add(light);
         }
         // planet.add(new THREE.AxesHelper(5));
@@ -196,10 +198,9 @@ function initializeControls() {
 function onWindowResize() {
     canvasSize.width = window.innerWidth;
     canvasSize.height = window.innerHeight;
-
     camera.aspect = canvasSize.width / canvasSize.height;
     camera.updateProjectionMatrix();
-    renderer.setSize( canvasSize.width, canvasSize.height );
+    composer.setSize(canvasSize.width, canvasSize.height );
 }
 
 // Register gridsphere click or target click
@@ -216,6 +217,29 @@ function onClick(e) {
             selectTarget(obj.object.targetIndex);
         }
     });
+}
+
+// Register doubleclick inside canvas to add a target
+function onDoubleClick(e) {
+    rayCaster.setFromCamera({x: (e.clientX/window.innerWidth)*2-1, y: (e.clientY/window.innerHeight)*-2+1}, camera);
+    let coords = rayCaster.intersectObjects(scene.children)[0].point;
+    let sphericalCoords = Math.spherical(gridRadius, coords.y, coords.z);
+    if (targets.length == 10) {
+        targets.push({
+            "name": "Custom target",
+            "el": sphericalCoords.el,
+            "az": sphericalCoords.az,
+            "dist": "Unknown",
+            "diam": "Unknown",
+            "const": "Unknown",
+            "above": "N/A",
+            "below": "N/A"
+        });
+    } else {
+        targets[10].el = sphericalCoords.el;
+        targets[10].az = sphericalCoords.az;
+    }
+    console.log(targets[10])
 }
 
 // OnScroll event used for camera zoom
@@ -286,8 +310,9 @@ function addEventListeners() {
     // Event listeners and handlers
     window.addEventListener('resize', onWindowResize, false);
     cv.addEventListener('wheel', onScroll, false);
-    cv.addEventListener( 'pointerdown', pointerDown, false);
-    cv.addEventListener( 'pointerup', pointerUp, false);
+    cv.addEventListener('pointerdown', pointerDown, false);
+    cv.addEventListener('pointerup', pointerUp, false);
+    cv.addEventListener('dblclick', onDoubleClick, false);
 }
 
 // Loop

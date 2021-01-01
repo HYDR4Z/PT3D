@@ -49,114 +49,131 @@ Math.degrees = function(radians) {
 	return radians * 180 / Math.PI;
 }
 
+// Convert spherical in degrees to cartesian
+Math.cartesian = function(azimuth, elevation, radius) {
+    return {
+        x: radius * Math.cos(Math.radians(elevation)) * Math.cos(Math.radians(azimuth)),
+        z: radius * Math.cos(Math.radians(elevation)) * Math.sin(Math.radians(azimuth)),
+        y: radius * Math.sin(Math.radians(elevation))
+    }
+}
+
+// Convert cartesian to spherical in degrees
+Math.spherical = function(radius, y, z) {
+    return {
+        el: Math.degrees(Math.asin(y / radius)),
+        az: Math.degrees(Math.asin(z / (-radius * Math.cos(Math.asin(y / radius)))))
+    }
+}
+
 // Fetch data from api
 const fetchData = () => {
     // http://api.hydr4z.nl/?key=BhEx0WJP5Y75qwK%5EE1i8
     targets = JSON.parse(`
     {
         "data": [
-            {
-                "name": "Mercury",
-                "el": -60.4,
-                "az": 326.1,
-                "dist": 1.434,
-                "diam": 4879,
-                "const": "Ophiuchus",
-                "above": "09:12",
-                "below": "16:25"
-            },
-            {
-                "name": "Venus",
-                "el": -59,
-                "az": 16.7,
-                "dist": 1.534,
-                "diam": 12104,
-                "const": "Pisces",
-                "above": "06:57",
-                "below": "15:07"
-            },
-            {
-                "name": "Mars",
-                "el": 28.1,
-                "az": 249.3,
-                "dist": 0.836,
-                "diam": 6779,
-                "const": "Capricornus",
-                "above": "13:02",
-                "below": "02:44"
-            },
-            {
-                "name": "Jupiter",
-                "el": -43.8,
-                "az": 295.1,
-                "dist": 5.949,
-                "diam": 139820,
-                "const": "Capricornus",
-                "above": "10:29",
-                "below": "18:46"
-            },
-            {
-                "name": "Saturn",
-                "el": -44,
-                "az": 295.6,
-                "dist": 10.852,
-                "diam": 139820,
-                "const": "Aries",
-                "above": "10:27",
-                "below": "18:44"
-            },
-            {
-                "name": "Uranus",
-                "el": 37.8,
-                "az": 239.8,
-                "dist": 19.216,
-                "diam": 50724,
-                "const": "Aquarius",
-                "above": "13:34",
-                "below": "03:53"
-            },
-            {
-                "name": "Neptune",
-                "el": -4.2,
-                "az": 266.1,
-                "dist": 30.17,
-                "diam": 49244,
-                "const": "Sagittarius",
-                "above": "12:12",
-                "below": "23:12"
-            },
-            {
-                "name": "Pluto",
-                "el": -49.6,
-                "az": 301.5,
-                "dist": 35.107,
-                "diam": 2376,
-                "const": "Sagittarius",
-                "above": "10:13",
-                "below": "18:02"
-            },
-            {
-                "name": "Moon",
-                "el": 34.4,
-                "az": 237.2,
-                "dist": 0.003,
-                "diam": 3474,
-                "const": "Cetus",
-                "above": "13:45",
-                "below": "02:36"
-            },
-            {
-                "name": "Sun",
-                "el": -59.7,
-                "az": 332,
-                "dist": 0.983,
-                "diam": 1392700,
-                "const": "Sagittarius",
-                "above": "08:43",
-                "below": "16:34"
-            }
+          {
+            "name": "Mercury",
+            "el": -29.2,
+            "az": 266.9,
+            "dist": 1.382,
+            "diam": 4879,
+            "const": "Ophiuchus",
+            "above": "09:31",
+            "below": "16:57"
+          },
+          {
+            "name": "Venus",
+            "el": -46.3,
+            "az": 295,
+            "dist": 1.563,
+            "diam": 12104,
+            "const": "Pisces",
+            "above": "07:18",
+            "below": "15:09"
+          },
+          {
+            "name": "Mars",
+            "el": 48.7,
+            "az": 198.9,
+            "dist": 0.906,
+            "diam": 6779,
+            "const": "Capricornus",
+            "above": "12:35",
+            "below": "02:32"
+          },
+          {
+            "name": "Jupiter",
+            "el": -17.1,
+            "az": 259.1,
+            "dist": 5.998,
+            "diam": 139820,
+            "const": "Capricornus",
+            "above": "10:03",
+            "below": "18:24"
+          },
+          {
+            "name": "Saturn",
+            "el": -18.1,
+            "az": 260,
+            "dist": 10.904,
+            "diam": 139820,
+            "const": "Aries",
+            "above": "09:59",
+            "below": "18:18"
+          },
+          {
+            "name": "Uranus",
+            "el": 51.8,
+            "az": 185.3,
+            "dist": 19.334,
+            "diam": 50724,
+            "const": "Aquarius",
+            "above": "13:02",
+            "below": "03:21"
+          },
+          {
+            "name": "Neptune",
+            "el": 19.7,
+            "az": 231.9,
+            "dist": 30.299,
+            "diam": 49244,
+            "const": "Sagittarius",
+            "above": "11:40",
+            "below": "22:42"
+          },
+          {
+            "name": "Pluto",
+            "el": -24.6,
+            "az": 264.1,
+            "dist": 35.151,
+            "diam": 2376,
+            "const": null,
+            "above": "09:43",
+            "below": "17:32"
+          },
+          {
+            "name": "Moon",
+            "el": 9.6,
+            "az": 69.7,
+            "dist": 0.003,
+            "diam": 3474,
+            "const": "Cancer",
+            "above": "19:04",
+            "below": "10:41"
+          },
+          {
+            "name": "Sun",
+            "el": -33.2,
+            "az": 274.2,
+            "dist": 0.983,
+            "diam": 1392700,
+            "const": "Sagittarius",
+            "above": "08:44",
+            "below": "16:41"
+          }
         ]
-    }
+      }
     `).data;
     updateTargetList();
 }
