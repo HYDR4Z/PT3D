@@ -206,12 +206,10 @@ function onWindowResize() {
 // Register gridsphere click or target click
 function onClick(e) {
     e.preventDefault();
-    let clickCoords;
     rayCaster.setFromCamera(mouse, camera);
     let objects = rayCaster.intersectObjects(scene.children);
     objects.slice().reverse().forEach((obj) => {
         if (obj.object.name == 'clickSphere') {
-            clickCoords = obj.point;
             selectTarget(null);
         } else if (obj.object.name != "") {
             selectTarget(obj.object.targetIndex);

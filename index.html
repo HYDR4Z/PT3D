@@ -53,21 +53,24 @@
                 <button id="updateLocationButton" onclick="if (!this.disabled) updateLocation()" disabled>Update location</button>
             </div>
             <div>
-                <p>Status: <span id="statusSpan" class="success">Ready</span></p>
+                <p>Status: <span id="statusSpan" class="error">Disconnected</span></p>
                 <button id="sendTargetButton" onclick="if (!this.disabled) sendTarget()" disabled>Send Target</button>
+                <button id="connectButton" onclick="if (!this.disabled) connectESP()">Connect to ESP</button>
             </div>
         </section>
     </main>
     <section id="cv"></section>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="./assets/three.js"></script>
-<script type="text/javascript" src="./assets/ThreeCSG.js"></script>
-<script type="text/javascript" src="./assets/GLTFLoader.js"></script>
-<script type="text/javascript" src="./assets/postprocessing.min.js"></script>
-<script type="text/javascript" src="./assets/three.text-texture.js"></script>
-<script type="text/javascript" src="./assets/three.text-sprite.js"></script>
-<script type="text/javascript" src="./assets/OrbitControls.js"></script>
+<script type="text/javascript" src="./assets/threejs/three.js"></script>
+<script type="text/javascript" src="./assets/threejs/ThreeCSG.js"></script>
+<script type="text/javascript" src="./assets/threejs/GLTFLoader.js"></script>
+<script type="text/javascript" src="./assets/threejs/postprocessing.min.js"></script>
+<script type="text/javascript" src="./assets/threejs/three.text-texture.js"></script>
+<script type="text/javascript" src="./assets/threejs/three.text-sprite.js"></script>
+<script type="text/javascript" src="./assets/threejs/OrbitControls.js"></script>
 <script type="text/javascript" src="./assets/graphic.js"></script>
+<script type="text/javascript" src="./assets/helper.js"></script>
+<script type="text/javascript" src="./assets/ble.js"></script>
 <script type="text/javascript" src="./assets/main.js"></script>
 </html>

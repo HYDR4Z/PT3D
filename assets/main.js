@@ -2,7 +2,6 @@
 const targetList = document.getElementById('targetList');
 const menuList = document.getElementById('menuList');
 const menuSection = document.getElementById('menuSection');
-const sendTargetButton = document.getElementById('sendTargetButton');
 const latInput = document.getElementById('latInput');
 const lonInput = document.getElementById('lonInput');
 const updateLocationButton = document.getElementById('updateLocationButton');
@@ -34,145 +33,113 @@ navigator.geolocation.getCurrentPosition((position) => {
     updateLocationUpdateButton();
 });
 
-// Linear interpolation function to smoothen actions
-function lerp (start, end, amt){
-    return (1-amt)*start+amt*end
-}
-
-// Convert degrees to radians
-Math.radians = function(degrees) {
-	return degrees * Math.PI / 180;
-}
-
-// Convert radians to degrees
-Math.degrees = function(radians) {
-	return radians * 180 / Math.PI;
-}
-
-// Convert spherical in degrees to cartesian
-Math.cartesian = function(azimuth, elevation, radius) {
-    return {
-        x: radius * Math.cos(Math.radians(elevation)) * Math.cos(Math.radians(azimuth)),
-        z: radius * Math.cos(Math.radians(elevation)) * Math.sin(Math.radians(azimuth)),
-        y: radius * Math.sin(Math.radians(elevation))
-    }
-}
-
-// Convert cartesian to spherical in degrees
-Math.spherical = function(radius, y, z) {
-    return {
-        el: Math.degrees(Math.asin(y / radius)),
-        az: Math.degrees(Math.asin(z / (-radius * Math.cos(Math.asin(y / radius)))))
-    }
-}
-
 // Fetch data from api
 const fetchData = () => {
-    // http://api.hydr4z.nl/?key=BhEx0WJP5Y75qwK%5EE1i8
+    // https://api.hydr4z.nl/?key=BhEx0WJP5Y75qwK%5EE1i8
     targets = JSON.parse(`
     {
         "data": [
-          {
-            "name": "Mercury",
-            "el": -29.2,
-            "az": 266.9,
-            "dist": 1.382,
-            "diam": 4879,
-            "const": "Ophiuchus",
-            "above": "09:31",
-            "below": "16:57"
-          },
-          {
-            "name": "Venus",
-            "el": -46.3,
-            "az": 295,
-            "dist": 1.563,
-            "diam": 12104,
-            "const": "Pisces",
-            "above": "07:18",
-            "below": "15:09"
-          },
-          {
-            "name": "Mars",
-            "el": 48.7,
-            "az": 198.9,
-            "dist": 0.906,
-            "diam": 6779,
-            "const": "Capricornus",
-            "above": "12:35",
-            "below": "02:32"
-          },
-          {
-            "name": "Jupiter",
-            "el": -17.1,
-            "az": 259.1,
-            "dist": 5.998,
-            "diam": 139820,
-            "const": "Capricornus",
-            "above": "10:03",
-            "below": "18:24"
-          },
-          {
-            "name": "Saturn",
-            "el": -18.1,
-            "az": 260,
-            "dist": 10.904,
-            "diam": 139820,
-            "const": "Aries",
-            "above": "09:59",
-            "below": "18:18"
-          },
-          {
-            "name": "Uranus",
-            "el": 51.8,
-            "az": 185.3,
-            "dist": 19.334,
-            "diam": 50724,
-            "const": "Aquarius",
-            "above": "13:02",
-            "below": "03:21"
-          },
-          {
-            "name": "Neptune",
-            "el": 19.7,
-            "az": 231.9,
-            "dist": 30.299,
-            "diam": 49244,
-            "const": "Sagittarius",
-            "above": "11:40",
-            "below": "22:42"
-          },
-          {
-            "name": "Pluto",
-            "el": -24.6,
-            "az": 264.1,
-            "dist": 35.151,
-            "diam": 2376,
-            "const": null,
-            "above": "09:43",
-            "below": "17:32"
-          },
-          {
-            "name": "Moon",
-            "el": 9.6,
-            "az": 69.7,
-            "dist": 0.003,
-            "diam": 3474,
-            "const": "Cancer",
-            "above": "19:04",
-            "below": "10:41"
-          },
-          {
-            "name": "Sun",
-            "el": -33.2,
-            "az": 274.2,
-            "dist": 0.983,
-            "diam": 1392700,
-            "const": "Sagittarius",
-            "above": "08:44",
-            "below": "16:41"
-          }
-        ]
+            {
+              "name": "Mercury",
+              "el": -33,
+              "az": 278.5,
+              "dist": 1.232,
+              "diam": 4879,
+              "const": "Sagittarius",
+              "above": "09:38",
+              "below": "17:56"
+            },
+            {
+              "name": "Venus",
+              "el": -54.5,
+              "az": 312,
+              "dist": 1.6,
+              "diam": 12104,
+              "const": "Aries",
+              "above": "07:39",
+              "below": "15:20"
+            },
+            {
+              "name": "Mars",
+              "el": 41.4,
+              "az": 232.3,
+              "dist": 1.008,
+              "diam": 6779,
+              "const": "Capricornus",
+              "above": "12:00",
+              "below": "02:18"
+            },
+            {
+              "name": "Jupiter",
+              "el": -33.5,
+              "az": 280.9,
+              "dist": 6.047,
+              "diam": 139820,
+              "const": "Capricornus",
+              "above": "09:26",
+              "below": "17:55"
+            },
+            {
+              "name": "Saturn",
+              "el": -35.5,
+              "az": 282.8,
+              "dist": 10.952,
+              "diam": 139820,
+              "const": "Aries",
+              "above": "09:19",
+              "below": "17:42"
+            },
+            {
+              "name": "Uranus",
+              "el": 43.4,
+              "az": 227.2,
+              "dist": 19.512,
+              "diam": 50724,
+              "const": "Aquarius",
+              "above": "12:19",
+              "below": "02:37"
+            },
+            {
+              "name": "Neptune",
+              "el": 3.3,
+              "az": 256.9,
+              "dist": 30.468,
+              "diam": 49244,
+              "const": "Sagittarius",
+              "above": "10:58",
+              "below": "22:00"
+            },
+            {
+              "name": "Pluto",
+              "el": -42.6,
+              "az": 288.7,
+              "dist": 35.182,
+              "diam": 2376,
+              "const": null,
+              "above": "09:01",
+              "below": "16:51"
+            },
+            {
+              "name": "Moon",
+              "el": -48.6,
+              "az": 292.9,
+              "dist": 0.002,
+              "diam": 3474,
+              "const": "Sagittarius",
+              "above": "08:20",
+              "below": "15:53"
+            },
+            {
+              "name": "Sun",
+              "el": -42.9,
+              "az": 291.2,
+              "dist": 0.984,
+              "diam": 1392700,
+              "const": "Sagittarius",
+              "above": "08:39",
+              "below": "16:55"
+            }
+          ]
       }
     `).data;
     updateTargetList();
@@ -239,7 +206,7 @@ const selectTarget = (targetIndex) => {
         selectedTargetIndex = targetIndex;
         selectedTargetObject = scene.getObjectByName(targets[targetIndex].name);
         cameraZoom = 10;
-        sendTargetButton.disabled = false;
+        sendTargetButton.disabled = !bleConnected;
     } else {
         selectedTargetIndex = null;
         selectedTargetObject = null;
@@ -263,16 +230,6 @@ const selectMenu = (menuIndex) => {
     }
 }
 
-// Check if the element's value is a float between the min and max
-const checkNumericInput = (el) => {
-    let min = parseFloat(el.min);
-    let max = parseFloat(el.max);
-    let val = parseFloat(el.value);
-    if (val > max) { el.value = max }
-    else if (val < min) { el.value = min }
-    updateLocationUpdateButton();
-}
-
 // Update location update button status
 const updateLocationUpdateButton = () => {
     if (lonInput.value != NaN && latInput.value != NaN && latInput.value != '' && lonInput.value != '' && (parseFloat(latInput.value) != userCoordinates.latitude || parseFloat(lonInput.value) != userCoordinates.longitude)) {
@@ -290,11 +247,10 @@ const updateLocation = () => {
     fetchData();
 }
 
-// Send planet ID to ESP
-const sendTarget = () => {
-    //TODO Send target to ESP
-}
-
 fetchData();
+setInterval(() => {
+    fetchData();
+}, 30000);
+
 init();
 animate();
